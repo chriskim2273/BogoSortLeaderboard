@@ -9,9 +9,12 @@ from firebase_admin import auth, credentials
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 
+from queryHandler import ConnectToMySQL
+
 load_dotenv()
 app = Flask(__name__)
 
+"""
 MongoURI = os.getenv("MONGO_DATABASE_URI")
 print(MongoURI)
 client = MongoClient(MongoURI)
@@ -20,25 +23,18 @@ try:
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
     print(e)
-db = client.SplitPicker
-UserSplitCollection = db.UserData
+db = client.BogoBoard
+UserSplitCollection = db.scores
+"""
+
+queryHandler = ConnectToMySQL()
+queryHandler.get_all_scores()
 
 # Load Firebase service account credentials
 cred = credentials.Certificate('serviceAccountKey.json')
 
 # Initialize the Firebase Admin SDK with the credentials and an app name
 default_app = firebase_admin.initialize_app(cred)
-
-"""
-, {
-    'apiKey': "AIzaSyD6Y5InfX5TJhUYKzAX5U0RwWvZggl60qw",
-    'authDomain': "splitpicker-c6bf8.firebaseapp.com",
-    'projectId': "splitpicker-c6bf8",
-    'storageBucket': "splitpicker-c6bf8.appspot.com",
-    'messagingSenderId': "982572975395",
-    'appId': "1:982572975395:web:e821494cf7cfd2bdf8f896",
-    'measurementId': "G-BHS21VK8GH"
-}"""
 
 def authenticate_request(func):
     @wraps(func)
@@ -73,6 +69,73 @@ def authenticate_request(func):
     
     return wrapper
 
+@app.route("/createNewUser", methods=['POST'])
+def createNewUser():
+    request_body = None
+    try:
+        request_body = request.json
+    except Exception as _:
+        return {'status': False, "message": "Please provide proper request body."}, 400
+
+    user_id = request_body.get("user_id")
+    email = request_body.get("email")
+    display_name = request_body.get("display_name")
+    if not email or not user_id or not display_name:
+        return {'status': False, "message": "Please provide proper request body."}, 400
+    
+    response = queryHandler.create_new_user(user_id, 'disploay', 'email')
+    return response
+    
+@app.route("/uploadScore", methods=['POST'])
+def uploadScore():
+    request_body = None
+    try:
+        request_body = request.json
+    except Exception as _:
+        return {'status': False, "message": "Please provide proper request body."}, 400
+
+    user_id = request_body.get("user_id")
+    score = request_body.get("score ")
+    amount_of_elements = request_body.get("amount_of_elements")
+    if not score or not user_id or not amount_of_elements:
+        return {'status': False, "message": "Please provide proper request body."}, 400
+    
+    response = queryHandler.upload_score(user_id, score, amount_of_elements)
+    return response
+
+@app.route("/getAllUserScores", methods=['GET'])
+def getAllUserScores():
+    request_body = None
+    try:
+        request_body = request.json
+    except Exception as _:
+        return {'status': False, "message": "Please provide proper request body."}, 400
+
+    user_id = request_body.get("user_id")
+    if not user_id:
+        return {'status': False, "message": "Please provide proper request body."}, 400
+    
+    response = queryHandler.get_user_scores(user_id)
+    return response
+
+@app.route("/getBestScores", methods=['GET'])
+def getBestScores():
+    request_body = None
+    try:
+        request_body = request.json
+    except Exception as _:
+        return {'status': False, "message": "Please provide proper request body."}, 400
+
+    amount_of_elements = request_body.get("amount_of_elements")
+    if not amount_of_elements:
+        return {'status': False, "message": "Please provide proper request body."}, 400
+    
+    response = queryHandler.get_best_scores(amount_of_elements)
+    return response
+# TODO: Delete scores, get all user scores, get best scores for each amount, search others
+
+
+"""
 @app.route("/")
 def hello_world():
     data_to_upload = {
@@ -204,7 +267,7 @@ def set_multiple_splits():
             print("New document created.")
             
     return jsonify({'result': 'Set all splits successfully.'}), 200
-
+"""
 @app.route('/', methods=('GET', 'POST'))
 def index():
     return "Index"
