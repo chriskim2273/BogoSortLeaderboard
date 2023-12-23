@@ -10,7 +10,8 @@ import {
 } from '@chakra-ui/react';
 import { AuthContextProvider } from './Context/AuthContext';
 import MainApp from './Components/Main';
-import AuthenticationComponent from './Components/LogIn';
+import AuthenticationComponent from './Components/Authentication';
+import Leaderboard from './BogoSort/leaderboard';
 
 const config = {
   initialColorMode: 'dark',
@@ -19,6 +20,9 @@ const config = {
 
 // 3. Extend the theme
 const theme = extendTheme({ config })
+
+let array = Array.from({ length: 15 }, (_, i) => i + 1);
+array.sort((a, b) => a - b);
 
 function App() {
   const [refresh, setRefresh] = useState(false);
@@ -32,7 +36,8 @@ function App() {
           <Text>BogoSort</Text>
           <Divider m={4} />
           <AuthenticationComponent refreshApp={refreshApp} />
-          <MainApp />
+          <Leaderboard />
+          <MainApp array={array} />
         </Box>
       </ChakraProvider>
     </AuthContextProvider>

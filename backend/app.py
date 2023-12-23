@@ -83,7 +83,7 @@ def uploadScore():
         return {'status': False, "message": "Please provide proper request body."}, 400
 
     user_id = request_body.get("user_id")
-    score = request_body.get("score ")
+    score = request_body.get("score")
     amount_of_elements = request_body.get("amount_of_elements")
     if not score or not user_id or not amount_of_elements:
         return {'status': False, "message": "Please provide proper request body."}, 400
@@ -91,8 +91,8 @@ def uploadScore():
     response = queryHandler.upload_score(user_id, score, amount_of_elements)
     return response
 
-@app.route("/getAllUserScores", methods=['GET'])
-def getAllUserScores():
+@app.route("/getAllUserScoresById", methods=['GET'])
+def getAllUserScoresById():
     request_body = None
     try:
         request_body = request.json
@@ -103,22 +103,31 @@ def getAllUserScores():
     if not user_id:
         return {'status': False, "message": "Please provide proper request body."}, 400
     
-    response = queryHandler.get_user_scores(user_id)
+    response = queryHandler.get_user_scores(user_id=user_id)
     return response
 
-@app.route("/getBestScores", methods=['GET'])
-def getBestScores():
+@app.route("/getAllUserScoresByEmail", methods=['GET'])
+def getAllUserScoresByEmail():
     request_body = None
     try:
         request_body = request.json
     except Exception as _:
         return {'status': False, "message": "Please provide proper request body."}, 400
 
-    amount_of_elements = request_body.get("amount_of_elements")
-    if not amount_of_elements:
+    email = request_body.get("email")
+    if not email:
         return {'status': False, "message": "Please provide proper request body."}, 400
     
-    response = queryHandler.get_best_scores(amount_of_elements)
+    response = queryHandler.get_user_scores(email=email)
+    return response
+
+@app.route("/getBestScores", methods=['GET'])
+def getBestScores():
+    amount_of_elements = request.args.get('amount_of_elements')
+    if not amount_of_elements:
+        return {'status': False, "message": "Please provide the amount of elements to find the best scores for."}, 400
+    
+    response = queryHandler.get_best_scores(6)
     return response
 # TODO: Delete scores, get all user scores, get best scores for each amount, search others
 

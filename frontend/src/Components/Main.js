@@ -20,56 +20,69 @@ import {
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import { FiRepeat } from "react-icons/fi";
 import BogoSort from '../BogoSort/bogoSort'
-import Leaderboard from '../BogoSort/leaderboard';
+import { UserAuth } from '../Context/AuthContext';
 
 function isSorted(arr) {
     for (let i = 1; i < arr.length; i++) {
-        if (arr[i - 1] > arr[i]) {
+        if (arr[i - 1] < arr[i]) {
             return false;
         }
     }
     return true;
 }
 
-let array = Array.from({ length: 15 }, (_, i) => i + 1);
-array.sort((a, b) => b - a);
+const DEFAULT_AMOUNT = 6;
+let newScoreFound = false;
 
-const DEFAULT_AMOUNT = 7;
-
-function MainApp() {
+function MainApp(props) {
     //const { user, googleSignIn } = UserAuth();
+    const { array } = props;
+    const { uploadScore } = UserAuth();
     const [bogoSize, setBogoSize] = useState(DEFAULT_AMOUNT);
-    const [bogoArray, setBogoArray] = useState(array.slice(array.length - DEFAULT_AMOUNT));
-
+    const [bogoArray, setBogoArray] = useState(array.slice(0, DEFAULT_AMOUNT));
+    const [restarting, setRestarting] = useState(false);
     let bogoCount = useRef(0);
     //BogoArray.sort((a, b) => b - a);
     //console.log(bogoArray)
     const toast = useToast()
     useEffect(() => {
         const interval = setInterval(() => {
-            bogoCount.current = bogoCount.current + 1;
-            setBogoArray((prevArray) => [...prevArray].sort((a, b) => Math.random() - 0.5));
-        }, 50); // sort every second
+            if (!newScoreFound) {
+                bogoCount.current = bogoCount.current + 1;
+                setBogoArray((prevArray) => [...prevArray].sort((a, b) => Math.random() - 0.5));
+            }
+        }, 50);
 
-        return () => clearInterval(interval); // cleanup on unmount
+        return () => clearInterval(interval);
     }, []);
 
-    if (isSorted(bogoArray)) {
+    if (isSorted(bogoArray) && !newScoreFound) {
+        newScoreFound = true;
         console.log("Sorted!: " + String(bogoCount.current));
+        const uploadPromise = uploadScore(bogoCount.current, bogoSize);
+        toast.promise(uploadPromise, {
+            success: { title: 'Successfully uploaded score!', description: 'Great score!' },
+            error: { title: 'Failed to upload score...', description: 'So sorry :(' },
+            loading: { title: 'Sorted! - Uploading To Leaderboard...', description: "Time: " + String(new Date(Date.now())) + ", Score: " + String(bogoCount.current) + ", N: " + String(bogoSize) },
+        })
+        /*
         toast({
             title: 'Sorted! - Uploading To Leaderboard...',
             description: "Time: " + String(new Date(Date.now())) + ", Score: " + String(bogoCount.current) + ", N: " + String(bogoSize),//Uploading to Leaderboard... {"\n"}Time: {Date.now()}, Score: {bogoCount}, N: {bogoSize}</Text>,
             status: 'success',
             duration: 10000,
             isClosable: true,
-        })
+        })*/
         bogoCount.current = 0;
-        setBogoArray(array.slice(array.length - bogoSize));
+        setBogoArray(array.slice(0, bogoSize));
+        setTimeout(() => {
+            newScoreFound = false;
+        }, 2500);
+
+
     }
     return (
         <Grid minH="100vh" p={3}>
-            <Leaderboard />
-
             <Stat>
                 <StatLabel>Global Bogo Count:</StatLabel>
                 <StatNumber><StatArrow type='increase' />{bogoCount.current}</StatNumber>
@@ -87,9 +100,13 @@ function MainApp() {
                     </NumberInputStepper>
                 </NumberInput>
 
-                <IconButton onClick={() => {
-                    bogoCount.current = 0;
-                    setBogoArray(array.slice(array.length - bogoSize));
+                <IconButton isLoading={restarting} onClick={() => {
+                    setRestarting(true);
+                    setTimeout(() => {
+                        bogoCount.current = 0;
+                        setBogoArray(array.slice(0, bogoSize));
+                        setRestarting(false);
+                    }, 3000);
                 }} isRound={true} aria-label='Restart' icon={<FiRepeat />} />
             </VStack>
         </Grid>

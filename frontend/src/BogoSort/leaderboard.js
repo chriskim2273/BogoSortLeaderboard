@@ -18,11 +18,35 @@ import {
     NumberIncrementStepper,
     NumberDecrementStepper,
     Divider,
+    Skeleton,
 } from '@chakra-ui/react';
+import { getUserScores } from '../Requests/GeneralRequests';
+import axios from 'axios';
 
 function Leaderboard() {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [amountOfElements, setAmountOfElements] = useState(7);
+    const [userScores, setUserScores] = useState();
     const btnRef = useRef();
+
+    useEffect(() => {
+        const fetchBestScores = async () => {
+            try {
+                const result = await axios.get('http://127.0.0.1:5000/getBestScores?amount_of_elements=' + String(amountOfElements)).then((response) => {
+                    console.log(response.data.result);
+                    setUserScores(response.data.result);
+                }, (error) => {
+                    console.log(JSON.stringify(error));
+                });
+            }
+            catch (error) {
+                console.error(error);
+            }
+        }
+        fetchBestScores();
+    }, [amountOfElements]);
+
+    const scoresArray = userScores ? Array.from(userScores, (x) => x) : undefined;
 
     return (
         <>
@@ -42,7 +66,7 @@ function Leaderboard() {
                     </DrawerHeader>
 
                     <DrawerBody>
-                        <NumberInput onChange={(valueString) => parseInt(valueString)} size='lg' defaultValue={7} min={7} max={15}>
+                        <NumberInput onChange={(valueString) => setAmountOfElements(parseInt(valueString))} size='lg' defaultValue={amountOfElements} min={1} max={15}>
                             <NumberInputField />
                             <NumberInputStepper>
                                 <NumberIncrementStepper />
@@ -51,10 +75,10 @@ function Leaderboard() {
                         </NumberInput>
                         <Divider />
                         <OrderedList>
-                            <ListItem>Lorem ipsum dolor sit amet</ListItem>
-                            <ListItem>Consectetur adipiscing elit</ListItem>
-                            <ListItem>Integer molestie lorem at massa</ListItem>
-                            <ListItem>Facilisis in pretium nisl aliquet</ListItem>
+                            {scoresArray ? scoresArray.map((score_element, index) => {
+                                const { amount_of_elements, score, time_of_score } = score_element;
+                                return (<ListItem>{score}</ListItem>)
+                            }) : <Skeleton height='20px' />}
                         </OrderedList>
                     </DrawerBody>
 

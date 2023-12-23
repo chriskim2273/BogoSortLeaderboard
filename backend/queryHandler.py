@@ -113,16 +113,25 @@ class ConnectToMySQL(threading.local):
             print(f'Score from user id {str(user_id)} failed to create.')
             return {'status': True, 'message': f'Score from user id {str(user_id)} failed to create.'}, 400
 
-    def get_user_scores(self, user_id):
-            query = """
-                SELECT *
-                FROM Scores
-                WHERE user_id = %s
-                ORDER BY score ASC;
-            """
+    def get_user_scores(self, user_id = None, email = None):
+            search_term = user_id if user_id else email
+            if user_id:
+                query = """
+                    SELECT *
+                    FROM Scores
+                    WHERE user_id = %s
+                    ORDER BY score ASC;
+                """
+            else:
+                query = """
+                    SELECT *
+                    FROM Scores
+                    WHERE email = %s
+                    ORDER BY score ASC;
+                """
             scores = {}
             try:
-                self.cur.execute(query, [user_id])
+                self.cur.execute(query, [search_term])
                 self.conn.commit()
 
                 result = self.cur.fetchall()
@@ -147,7 +156,7 @@ class ConnectToMySQL(threading.local):
             ORDER BY score ASC
             LIMIT 50;
         """
-        scores = {}
+        scores = []
         try:
             self.cur.execute(query, [amount_of_elements])
             self.conn.commit()

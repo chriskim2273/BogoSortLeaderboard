@@ -1,6 +1,6 @@
 import { useContext, createContext, useState, useEffect } from 'react';
 import { auth } from '../firebase';
-import { signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo } from 'firebase/auth';
+import { signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import axios from "axios";
 
 //import { useNavigation } from '@react-navigation/core';
@@ -67,6 +67,24 @@ export const AuthContextProvider = ({ children }) => {
         });
     }
 
+    const uploadScore = async (score, amount_of_elements) => {
+        const options = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': user.stsTokenManager.accessToken
+            }
+        }
+        return axios.post('http://127.0.0.1:5000/uploadScore', {
+            'user_id': user.uid,
+            'score': score,
+            'amount_of_elements': amount_of_elements,
+        }, options).then((response) => {
+            console.log(JSON.stringify(response.data));
+        }, (error) => {
+            console.log(error);
+        });
+    }
+
     const signUp = () => {
         try {
             createUserWithEmailAndPassword(auth, "christopher.kim.1@stonybrook.edu", "pokemon2273")
@@ -117,24 +135,7 @@ export const AuthContextProvider = ({ children }) => {
         return () => unsubscribe;
     }, [user])
 
-    const saveSplitsToDatabase = async (all_splits) => {
-        const options = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': user.stsTokenManager.accessToken
-            }
-        }
-        await axios.post('http://127.0.0.1:5000/setUserSplits', {
-            'user_id': user.uid,
-            'all_splits': all_splits,
-        }, options).then((response) => {
-            console.log(JSON.stringify(response.data));
-        }, (error) => {
-            console.log(error);
-        });
-    }
-
-    return (<AuthContext.Provider value={{ user, googleSignIn, logOut }}>{children}</AuthContext.Provider>)
+    return (<AuthContext.Provider value={{ user, googleSignIn, logOut, uploadScore }}>{children}</AuthContext.Provider>)
 }
 
 export const UserAuth = () => {
