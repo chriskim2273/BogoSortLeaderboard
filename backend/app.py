@@ -7,25 +7,15 @@ import firebase_admin
 from dotenv import load_dotenv
 from firebase_admin import auth, credentials
 from flask import Flask, jsonify, request
-from pymongo import MongoClient
+
+from flask_cors import CORS, cross_origin
 
 from queryHandler import ConnectToMySQL
 
 load_dotenv()
 app = Flask(__name__)
-
-"""
-MongoURI = os.getenv("MONGO_DATABASE_URI")
-print(MongoURI)
-client = MongoClient(MongoURI)
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
-db = client.BogoBoard
-UserSplitCollection = db.scores
-"""
+CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 queryHandler = ConnectToMySQL()
 queryHandler.get_all_scores()
@@ -40,7 +30,6 @@ def authenticate_request(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         id_token = request.headers.get('Authorization')  # Get ID token from request header
-        
         request_body = None
         try:
             request_body = request.json
@@ -50,11 +39,9 @@ def authenticate_request(func):
         uid_token = request_body.get("user_id")
         if not uid_token:
             return jsonify({'error': "User uid missing."}), 401
-
+        
         if id_token:
             try:
-                print(id_token)
-                # Verify the ID token
                 decoded_token = auth.verify_id_token(id_token)
                 uid = decoded_token['uid']
                 if uid != uid_token:
@@ -63,13 +50,14 @@ def authenticate_request(func):
                 # ...
                 return func(*args, **kwargs)  # Proceed with the API request
             except auth.InvalidIdTokenError as e:
-                return jsonify({'error': 'Invalid ID token'}), 401
+                return jsonify({'error': 'Invalid ID token: ' + id_token}), 401
         else:
             return jsonify({'error': 'Authorization header missing'}), 401
     
     return wrapper
 
 @app.route("/createNewUser", methods=['POST'])
+@authenticate_request
 def createNewUser():
     request_body = None
     try:
@@ -83,7 +71,7 @@ def createNewUser():
     if not email or not user_id or not display_name:
         return {'status': False, "message": "Please provide proper request body."}, 400
     
-    response = queryHandler.create_new_user(user_id, 'disploay', 'email')
+    response = queryHandler.create_new_user(user_id, display_name, email)
     return response
     
 @app.route("/uploadScore", methods=['POST'])
