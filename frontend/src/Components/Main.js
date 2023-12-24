@@ -25,6 +25,7 @@ import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import { FiRepeat } from "react-icons/fi";
 import BogoSort from '../BogoSort/bogoSort'
 import { UserAuth } from '../Context/AuthContext';
+import { DEFAULT_AMOUNT } from '../Variables/mainVariables';
 
 function isSorted(arr) {
     for (let i = 1; i < arr.length; i++) {
@@ -43,8 +44,6 @@ function shuffleArray(array) {
     return array;
 }
 
-
-const DEFAULT_AMOUNT = 7;
 let newScoreFound = false;
 
 function MainApp(props) {
