@@ -27,7 +27,22 @@ import BogoSort from '../BogoSort/bogoSort'
 import { UserAuth } from '../Context/AuthContext';
 import { DEFAULT_AMOUNT, MAX_AMOUNT, MIN_AMOUNT } from '../Variables/mainVariables';
 
+let sortedList = [];
+
 function isSorted(arr) {
+    if (sortedList.length > 10)
+        sortedList = [];
+    if (sortedList.includes(arr)) {
+        const index = sortedList.indexOf(arr);
+        if (index > -1) {
+            sortedList.splice(index, 1);
+        }
+        return false;
+    }
+    else {
+        sortedList.push(arr);
+    }
+
     for (let i = 1; i < arr.length; i++) {
         if (arr[i - 1] < arr[i]) {
             return false;
@@ -78,12 +93,12 @@ function MainApp(props) {
             }
             if (bogoCount.current > bogoSize * bogoSize * bogoSize)
                 setCountType('decrease');
-        }, 50);
+        }, 100);
         return () => clearInterval(interval);
     }, []);
 
 
-    if (isSorted([...bogoArray]) && !newScoreFound) {
+    if (isSorted(bogoArray) && !newScoreFound) {
         //newScoreFound = true;
         console.log("Sorted!: " + String(bogoCount.current));
         const uploadPromise = uploadScore(bogoCount.current, bogoSize);

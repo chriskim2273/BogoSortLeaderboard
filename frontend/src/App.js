@@ -29,7 +29,6 @@ function App() {
     setRefresh(!refresh);
   }
 
-
   return (
     <AuthContextProvider>
       <ChakraProvider theme={theme}>
