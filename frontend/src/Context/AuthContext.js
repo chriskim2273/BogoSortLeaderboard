@@ -2,6 +2,7 @@ import { useContext, createContext, useState, useEffect } from 'react';
 import { auth } from '../firebase';
 import { signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import axios from "axios";
+import { API_URL } from '../Variables/apiVariables';
 
 //import { useNavigation } from '@react-navigation/core';
 
@@ -23,7 +24,7 @@ export const AuthContextProvider = ({ children }) => {
                         'Authorization': result.user.stsTokenManager.accessToken
                     }
                 }
-                await axios.post('http://127.0.0.1:5000/createNewUser', {
+                await axios.post(API_URL + 'createNewUser', {
                     'user_id': result.user.uid,
                     'email': result.user.email,
                     'display_name': result._tokenResponse.displayName
@@ -51,7 +52,7 @@ export const AuthContextProvider = ({ children }) => {
                 'Authorization': user.stsTokenManager.accessToken
             }
         }
-        await axios.post('http://127.0.0.1:5000/createNewUser', {
+        await axios.post(API_URL + 'createNewUser', {
             'user_id': user.uid,
             'email': user.email,
             'display_name': display_name
@@ -74,7 +75,7 @@ export const AuthContextProvider = ({ children }) => {
                 'Authorization': user.stsTokenManager.accessToken
             }
         }
-        return axios.post('http://127.0.0.1:5000/uploadScore', {
+        return axios.post(API_URL + 'uploadScore', {
             'user_id': user.uid,
             'score': score,
             'amount_of_elements': amount_of_elements,

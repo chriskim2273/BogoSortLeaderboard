@@ -25,6 +25,7 @@ import {
 import { getUserScores } from '../Requests/GeneralRequests';
 import axios from 'axios';
 import { FaCrown } from "react-icons/fa";
+import { API_URL } from '../Variables/apiVariables';
 
 function Leaderboard() {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -37,7 +38,7 @@ function Leaderboard() {
         const fetchBestScores = async () => {
             setLoadingScores(true);
             try {
-                const result = await axios.get('http://127.0.0.1:5000/getBestScores?amount_of_elements=' + String(amountOfElements)).then((response) => {
+                const result = await axios.get(API_URL + 'getBestScores?amount_of_elements=' + String(amountOfElements)).then((response) => {
                     //console.log(response.data.result);
                     setUserScores(response.data.result);
                     setLoadingScores(false);
@@ -58,7 +59,7 @@ function Leaderboard() {
         {scoresArray ? scoresArray.map((score_element, index) => {
             const { time_of_score, score, amount_of_elements, user_id, display_name, email } = score_element;
             //console.log(typeof time_of_score)
-            return (<Box paddingTop={4}><ListItem key={"leaderboard_" + String(amountOfElements) + "_" + String(index)}>θ({score}) - {time_of_score} - {display_name}</ListItem><Divider paddingTop={2} paddingBottom={2} /></Box>)
+            return (<Box key={"leaderboard_box_" + String(amountOfElements) + "_" + String(index)} paddingTop={4}><ListItem key={"leaderboard_" + String(amountOfElements) + "_" + String(index)}>θ({score}) - {time_of_score} - {display_name}</ListItem><Divider paddingTop={2} paddingBottom={2} /></Box>)
         }) : <Skeleton height='20px' />}
     </OrderedList>;
 
