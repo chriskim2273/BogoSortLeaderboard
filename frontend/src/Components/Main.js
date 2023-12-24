@@ -93,7 +93,7 @@ function MainApp(props) {
             }
             if (bogoCount.current > bogoSize * bogoSize * bogoSize)
                 setCountType('decrease');
-        }, 100);
+        }, 50);
         return () => clearInterval(interval);
     }, []);
 
