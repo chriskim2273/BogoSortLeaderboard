@@ -19,33 +19,40 @@ class ConnectToMySQL(threading.local):
     def __init__(self):
         self.ca_location = MYSQL_CA_LOCATION if 'PYTHONANYWHERE_DOMAIN' in os.environ else 'cacert.pem'
 
-        print(self.ca_location)
-
         """
         self.conn = MySQLdb.connect(
             host=MYSQL_HOST,
             user=MYSQL_USER,
             passwd=MYSQL_PASS,
             db=MYSQL_DB,
-            ssl_mode="VERIFY_IDENTITY",
+
+        )
+                    ssl_mode="VERIFY_IDENTITY",
             ssl={
                 'ca': self.ca_location
             },
-        )
         """
+        if 'PYTHONANYWHERE_DOMAIN' in os.environ:
+            self.conn = MySQLdb.connect(
+                host=MYSQL_HOST,
+                user=MYSQL_USER,
+                passwd=MYSQL_PASS,
+                db=MYSQL_DB,
 
-        self.tunnel = sshtunnel.SSHTunnelForwarder(
-            ('ssh.pythonanywhere.com'),
-            ssh_username = MYSQL_SSH_USER, ssh_password = MYSQL_SSH_PASS,
-            remote_bind_address=(MYSQL_HOST, 3306)
-        )
-        self.tunnel.start()
-        self.conn = MySQLdb.connect(
-            user=MYSQL_USER,
-            passwd=MYSQL_PASS,
-            host='127.0.0.1', port=self.tunnel.local_bind_port,
-            db=MYSQL_DB,
-        )
+            )
+        else:
+            self.tunnel = sshtunnel.SSHTunnelForwarder(
+                ('ssh.pythonanywhere.com'),
+                ssh_username = MYSQL_SSH_USER, ssh_password = MYSQL_SSH_PASS,
+                remote_bind_address=(MYSQL_HOST, 3306)
+            )
+            self.tunnel.start()
+            self.conn = MySQLdb.connect(
+                user=MYSQL_USER,
+                passwd=MYSQL_PASS,
+                host='127.0.0.1', port=self.tunnel.local_bind_port,
+                db=MYSQL_DB,
+            )
         self.conn.autocommit(True)
         self.cur = self.conn.cursor()
 
@@ -57,24 +64,27 @@ class ConnectToMySQL(threading.local):
     def reconnect(self):
         self.cur.close()
         self.conn.close()
-        """
-        self.conn = MySQLdb.connect(
-            host=MYSQL_HOST,
-            user=MYSQL_USER,
-            passwd=MYSQL_PASS,
-            db=MYSQL_DB,
-            ssl_mode="VERIFY_IDENTITY",
-            ssl={
-                'ca': self.ca_location
-            },
-        )
-        """
-        self.conn = MySQLdb.connect(
-            user=MYSQL_USER,
-            passwd=MYSQL_PASS,
-            host='127.0.0.1', port=self.tunnel.local_bind_port,
-            db=MYSQL_DB,
-        )
+        if 'PYTHONANYWHERE_DOMAIN' in os.environ:
+            self.conn = MySQLdb.connect(
+                host=MYSQL_HOST,
+                user=MYSQL_USER,
+                passwd=MYSQL_PASS,
+                db=MYSQL_DB,
+
+            )
+        else:
+            self.tunnel = sshtunnel.SSHTunnelForwarder(
+                ('ssh.pythonanywhere.com'),
+                ssh_username = MYSQL_SSH_USER, ssh_password = MYSQL_SSH_PASS,
+                remote_bind_address=(MYSQL_HOST, 3306)
+            )
+            self.tunnel.start()
+            self.conn = MySQLdb.connect(
+                user=MYSQL_USER,
+                passwd=MYSQL_PASS,
+                host='127.0.0.1', port=self.tunnel.local_bind_port,
+                db=MYSQL_DB,
+            )
         self.conn.autocommit(True)
         self.cur = self.conn.cursor()
 
@@ -84,6 +94,10 @@ class ConnectToMySQL(threading.local):
             VALUES (%s, %s, %s, NOW());
         """
         try:
+            self.cur.execute(query, [user_id, display_name, email])
+            self.conn.commit()
+        except (AttributeError, MySQLdb.OperationalError):
+            self.reconnect()
             self.cur.execute(query, [user_id, display_name, email])
             self.conn.commit()
         except Exception as e:
@@ -102,6 +116,10 @@ class ConnectToMySQL(threading.local):
             VALUES (%s, NOW(), %s, %s);
         """
         try:
+            self.cur.execute(query, [user_id, score, amount_of_elements])
+            self.conn.commit()
+        except (AttributeError, MySQLdb.OperationalError):
+            self.reconnect()
             self.cur.execute(query, [user_id, score, amount_of_elements])
             self.conn.commit()
         except Exception as e:
@@ -136,16 +154,23 @@ class ConnectToMySQL(threading.local):
                 self.conn.commit()
 
                 result = self.cur.fetchall()
-                for score in result:
-                    _, time, score, amount_of_elements = score
+            except (AttributeError, MySQLdb.OperationalError):
+                self.reconnect()
+                self.cur.execute(query, [search_term])
+                self.conn.commit()
 
-                    scores.append({
-                        'time_of_score': time,
-                        'score': score,
-                        'amount_of_elements': amount_of_elements
-                        })
+                result = self.cur.fetchall()
             except Exception as e:
                 return {'status': False, 'message': str(e)}, 400
+            
+            for score in result:
+                _, time, score, amount_of_elements = score
+
+                scores.append({
+                    'time_of_score': time,
+                    'score': score,
+                    'amount_of_elements': amount_of_elements
+                    })
             
             return {'status': True, 'result': scores}, 200
     
@@ -164,21 +189,27 @@ class ConnectToMySQL(threading.local):
             self.conn.commit()
 
             result = self.cur.fetchall()
-            for score in result:
-                user_id, time, score, amount_of_elements, _, display_name, email, _ = score
-                #print(type(time))
-                formatted_date = time.strftime("%a, %d %b %Y")
-                scores.append({
-                    'time_of_score': formatted_date,
-                    'score': score,
-                    'amount_of_elements': amount_of_elements,
-                    'user_id': user_id,
-                    'display_name': display_name,
-                    'email': email
-                    })
+        except (AttributeError, MySQLdb.OperationalError):
+            self.reconnect()
+            self.cur.execute(query, [amount_of_elements])
+            self.conn.commit()
+
+            result = self.cur.fetchall()
         except Exception as e:
             return {'status': False, 'message': str(e)}, 400
         
+        for score in result:
+            user_id, time, score, amount_of_elements, _, display_name, email, _ = score
+            #print(type(time))
+            formatted_date = time.strftime("%a, %d %b %Y")
+            scores.append({
+                'time_of_score': formatted_date,
+                'score': score,
+                'amount_of_elements': amount_of_elements,
+                'user_id': user_id,
+                'display_name': display_name,
+                'email': email
+                })
         return {'status': True, 'result': scores}, 200
 
     def get_all_scores(self):

@@ -22,7 +22,7 @@ queryHandler = ConnectToMySQL()
 queryHandler.get_all_scores()
 
 # Load Firebase service account credentials
-cred = credentials.Certificate('serviceAccountKey.json')
+cred = credentials.Certificate('/home/chriskim2273/BogoBoard/serviceAccountKey.json' if 'PYTHONANYWHERE_DOMAIN' in os.environ else 'serviceAccountKey.json') #'/home/chriskim2273/BogoBoard/serviceAccountKey.json')
 
 # Initialize the Firebase Admin SDK with the credentials and an app name
 default_app = firebase_admin.initialize_app(cred)
