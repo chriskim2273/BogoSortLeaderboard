@@ -1,3 +1,14 @@
+
+# BogoBoard!
+
+A small mini project to prove that BogoSort is the best sorting algorithm. 
+
+"Theory will only take you so far!" - Robert J. Oppenheimer
+
+
+--
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
