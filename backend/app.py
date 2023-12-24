@@ -10,6 +10,7 @@ from flask import Flask, jsonify, request
 
 from flask_cors import CORS, cross_origin
 
+
 from queryHandler import ConnectToMySQL
 
 load_dotenv()
@@ -127,7 +128,7 @@ def getBestScores():
     if not amount_of_elements:
         return {'status': False, "message": "Please provide the amount of elements to find the best scores for."}, 400
     
-    response = queryHandler.get_best_scores(6)
+    response = queryHandler.get_best_scores(amount_of_elements)
     return response
 # TODO: Delete scores, get all user scores, get best scores for each amount, search others
 

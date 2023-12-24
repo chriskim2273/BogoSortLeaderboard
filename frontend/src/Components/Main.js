@@ -16,6 +16,10 @@ import {
     IconButton,
     Button,
     useToast,
+    Alert,
+    AlertIcon,
+    AlertTitle,
+    AlertDescription,
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import { FiRepeat } from "react-icons/fi";
@@ -40,17 +44,30 @@ function shuffleArray(array) {
 }
 
 
-const DEFAULT_AMOUNT = 6;
+const DEFAULT_AMOUNT = 7;
 let newScoreFound = false;
 
 function MainApp(props) {
-    //const { user, googleSignIn } = UserAuth();
+    const { user } = UserAuth();
     const { array } = props;
     const { uploadScore } = UserAuth();
     const [bogoSize, setBogoSize] = useState(DEFAULT_AMOUNT);
     const [bogoArray, setBogoArray] = useState(array.slice(0, DEFAULT_AMOUNT));
     const [restarting, setRestarting] = useState(false);
+    const [countType, setCountType] = useState('increase');
     let bogoCount = useRef(0);
+
+    const notLoggedInAlert = !user ? (<Alert status='error'
+        variant='subtle'
+        flexDirection='column'
+        alignItems='center'
+        justifyContent='center'
+        textAlign='center'
+        height='100px'>
+        <AlertIcon />
+        <AlertTitle>You are not logged in!</AlertTitle>
+        <AlertDescription>Any scores will not be uploaded!</AlertDescription>
+    </Alert>) : <></>
     //BogoArray.sort((a, b) => b - a);
     //console.log(bogoArray)
     const toast = useToast()
@@ -60,13 +77,15 @@ function MainApp(props) {
                 bogoCount.current = bogoCount.current + 1;
                 setBogoArray((prevArray) => shuffleArray([...prevArray]));
             }
+            if (bogoCount.current > bogoSize * bogoSize * bogoSize)
+                setCountType('decrease');
         }, 50);
-
         return () => clearInterval(interval);
     }, []);
 
+
     if (isSorted([...bogoArray]) && !newScoreFound) {
-        newScoreFound = true;
+        //newScoreFound = true;
         console.log("Sorted!: " + String(bogoCount.current));
         const uploadPromise = uploadScore(bogoCount.current, bogoSize);
         toast.promise(uploadPromise, {
@@ -84,21 +103,22 @@ function MainApp(props) {
         })*/
         bogoCount.current = 0;
         setBogoArray(array.slice(0, bogoSize));
-        setTimeout(() => {
-            newScoreFound = false;
-        }, 2500);
-
+        setCountType('increase');
+        //setTimeout(() => {
+        //    newScoreFound = false;
+        //}, 2500);
 
     }
+    //const type = bogoCount < 100 ? 'increase' : 'decrease';
     return (
         <Grid minH="100vh" p={3}>
+            {notLoggedInAlert}
             <Stat>
-                <StatLabel>Global Bogo Count:</StatLabel>
-                <StatNumber><StatArrow type='increase' />{bogoCount.current}</StatNumber>
-
-
+                <StatLabel>Runtime:</StatLabel>
+                <StatNumber><StatArrow type={countType} />θ({bogoCount.current})</StatNumber>
             </Stat>
-            <Text>RunTime: θ({bogoCount.current})</Text>
+            {//<Text>RunTime: θ({bogoCount.current})</Text>
+            }
             <BogoSort array={bogoArray} />
             <VStack spacing={8}>
                 <NumberInput onChange={(valueString) => setBogoSize(parseInt(valueString))} size='lg' defaultValue={DEFAULT_AMOUNT} min={7} max={15}>
@@ -111,11 +131,12 @@ function MainApp(props) {
 
                 <IconButton isLoading={restarting} onClick={() => {
                     setRestarting(true);
+                    bogoCount.current = 0;
+                    setBogoArray(array.slice(0, bogoSize));
+                    setCountType('increase');
                     setTimeout(() => {
-                        bogoCount.current = 0;
-                        setBogoArray(array.slice(0, bogoSize));
                         setRestarting(false);
-                    }, 3000);
+                    }, 1500);
                 }} isRound={true} aria-label='Restart' icon={<FiRepeat />} />
             </VStack>
         </Grid>

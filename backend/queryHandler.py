@@ -3,6 +3,7 @@ import threading
 import os
 from dotenv import load_dotenv
 import sshtunnel
+from datetime import datetime
 
 load_dotenv()
 
@@ -151,7 +152,8 @@ class ConnectToMySQL(threading.local):
     def get_best_scores(self, amount_of_elements):
         query = """
             SELECT *
-            FROM Scores
+            FROM Scores S
+            INNER JOIN Users U ON S.user_id = U.user_id
             WHERE amount_of_elements = %s
             ORDER BY score ASC
             LIMIT 50;
@@ -163,12 +165,16 @@ class ConnectToMySQL(threading.local):
 
             result = self.cur.fetchall()
             for score in result:
-                _, time, score, amount_of_elements = score
-
+                user_id, time, score, amount_of_elements, _, display_name, email, _ = score
+                #print(type(time))
+                formatted_date = time.strftime("%a, %d %b %Y")
                 scores.append({
-                    'time_of_score': time,
+                    'time_of_score': formatted_date,
                     'score': score,
-                    'amount_of_elements': amount_of_elements
+                    'amount_of_elements': amount_of_elements,
+                    'user_id': user_id,
+                    'display_name': display_name,
+                    'email': email
                     })
         except Exception as e:
             return {'status': False, 'message': str(e)}, 400

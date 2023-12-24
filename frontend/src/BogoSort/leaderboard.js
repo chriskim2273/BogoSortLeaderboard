@@ -19,27 +19,34 @@ import {
     NumberDecrementStepper,
     Divider,
     Skeleton,
+    IconButton,
+    Box,
 } from '@chakra-ui/react';
 import { getUserScores } from '../Requests/GeneralRequests';
 import axios from 'axios';
+import { FaCrown } from "react-icons/fa";
 
 function Leaderboard() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [amountOfElements, setAmountOfElements] = useState(7);
     const [userScores, setUserScores] = useState();
+    const [loadingScores, setLoadingScores] = useState(false);
     const btnRef = useRef();
 
     useEffect(() => {
         const fetchBestScores = async () => {
+            setLoadingScores(true);
             try {
                 const result = await axios.get('http://127.0.0.1:5000/getBestScores?amount_of_elements=' + String(amountOfElements)).then((response) => {
-                    console.log(response.data.result);
+                    //console.log(response.data.result);
                     setUserScores(response.data.result);
+                    setLoadingScores(false);
                 }, (error) => {
                     console.log(JSON.stringify(error));
                 });
             }
             catch (error) {
+                setLoadingScores(false);
                 console.error(error);
             }
         }
@@ -47,12 +54,19 @@ function Leaderboard() {
     }, [amountOfElements]);
 
     const scoresArray = userScores ? Array.from(userScores, (x) => x) : undefined;
+    const scoresComponent = loadingScores ? <Skeleton m={5} height='100%' /> : <OrderedList>
+        {scoresArray ? scoresArray.map((score_element, index) => {
+            const { time_of_score, score, amount_of_elements, user_id, display_name, email } = score_element;
+            //console.log(typeof time_of_score)
+            return (<Box paddingTop={4}><ListItem key={"leaderboard_" + String(amountOfElements) + "_" + String(index)}>θ({score}) - {time_of_score} - {display_name}</ListItem><Divider paddingTop={2} paddingBottom={2} /></Box>)
+        }) : <Skeleton height='20px' />}
+    </OrderedList>;
 
     return (
         <>
-            <Button ref={btnRef} colorScheme='teal' onClick={onOpen}>
+            <IconButton as={FaCrown} ref={btnRef} colorScheme='teal' onClick={onOpen}>
                 Leaderboard
-            </Button>
+            </IconButton>
             <Drawer
                 isOpen={isOpen}
                 placement='right'
@@ -74,12 +88,7 @@ function Leaderboard() {
                             </NumberInputStepper>
                         </NumberInput>
                         <Divider />
-                        <OrderedList>
-                            {scoresArray ? scoresArray.map((score_element, index) => {
-                                const { amount_of_elements, score, time_of_score } = score_element;
-                                return (<ListItem key={"leaderboard_" + String(amountOfElements) + "_" + String(index)}>{score}</ListItem>)
-                            }) : <Skeleton height='20px' />}
-                        </OrderedList>
+                        {scoresComponent}
                     </DrawerBody>
 
                     <DrawerFooter>

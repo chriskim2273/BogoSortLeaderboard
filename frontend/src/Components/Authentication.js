@@ -1,23 +1,24 @@
 import React from 'react';
 import {
-    Text,
-    Button,
-    Box,
+    IconButton,
 } from '@chakra-ui/react';
 import { UserAuth } from '../Context/AuthContext';
+import { CiLogin } from "react-icons/ci";
+import { CiLogout } from "react-icons/ci";
+
 
 function AuthenticationComponent(props) {
     const { user, googleSignIn, logOut } = UserAuth();
     const refreshApp = props.refreshApp;
 
     const Component = !user ? (
-        <Button onClick={() => {
+        <IconButton as={CiLogin} onClick={() => {
             googleSignIn();
             refreshApp();
-        }}>Sign In/Up (Google)</Button>
-    ) : <Box> <Text fontSize={'sm'}>Welcome, {user?.email}</Text><Button onClick={() => {
-        logOut();
-    }}>Log Out</Button></Box>
+        }}>Sign In/Up (Google)</IconButton>) :
+        <IconButton as={CiLogout} onClick={() => {
+            logOut();
+        }}>Log Out</IconButton>
 
     console.log(user);
 

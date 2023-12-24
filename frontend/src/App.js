@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   ChakraProvider,
   Divider,
   Flex,
-  Grid,
   Text,
   extendTheme,
 } from '@chakra-ui/react';
@@ -29,14 +28,18 @@ function App() {
   const refreshApp = () => {
     setRefresh(!refresh);
   }
+
+
   return (
     <AuthContextProvider>
       <ChakraProvider theme={theme}>
         <Box textAlign="center" fontSize="xl">
-          <Text>BogoSort</Text>
+          <Flex justifyContent="space-between" alignItems="center" p={5}>
+            <Leaderboard />
+            <Text >BogoBoard</Text>
+            <AuthenticationComponent refreshApp={refreshApp} />
+          </Flex>
           <Divider m={4} />
-          <AuthenticationComponent refreshApp={refreshApp} />
-          <Leaderboard />
           <MainApp array={array} />
         </Box>
       </ChakraProvider>
