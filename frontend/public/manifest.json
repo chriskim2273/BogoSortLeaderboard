@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "BogoBoard!",
+  "name": "A small mini project to prove that BogoSort is the best sorting algorithm. Theory can only take you so far.",
   "icons": [
     {
       "src": "favicon.ico",
