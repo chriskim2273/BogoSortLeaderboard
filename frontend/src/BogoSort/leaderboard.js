@@ -77,7 +77,7 @@ function Leaderboard() {
                         <OrderedList>
                             {scoresArray ? scoresArray.map((score_element, index) => {
                                 const { amount_of_elements, score, time_of_score } = score_element;
-                                return (<ListItem>{score}</ListItem>)
+                                return (<ListItem key={"leaderboard_" + String(amountOfElements) + "_" + String(index)}>{score}</ListItem>)
                             }) : <Skeleton height='20px' />}
                         </OrderedList>
                     </DrawerBody>

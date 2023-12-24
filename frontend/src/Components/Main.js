@@ -31,6 +31,15 @@ function isSorted(arr) {
     return true;
 }
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+
 const DEFAULT_AMOUNT = 6;
 let newScoreFound = false;
 
@@ -49,14 +58,14 @@ function MainApp(props) {
         const interval = setInterval(() => {
             if (!newScoreFound) {
                 bogoCount.current = bogoCount.current + 1;
-                setBogoArray((prevArray) => [...prevArray].sort((a, b) => Math.random() - 0.5));
+                setBogoArray((prevArray) => shuffleArray([...prevArray]));
             }
         }, 50);
 
         return () => clearInterval(interval);
     }, []);
 
-    if (isSorted(bogoArray) && !newScoreFound) {
+    if (isSorted([...bogoArray]) && !newScoreFound) {
         newScoreFound = true;
         console.log("Sorted!: " + String(bogoCount.current));
         const uploadPromise = uploadScore(bogoCount.current, bogoSize);
