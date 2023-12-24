@@ -25,7 +25,7 @@ import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import { FiRepeat } from "react-icons/fi";
 import BogoSort from '../BogoSort/bogoSort'
 import { UserAuth } from '../Context/AuthContext';
-import { DEFAULT_AMOUNT } from '../Variables/mainVariables';
+import { DEFAULT_AMOUNT, MAX_AMOUNT, MIN_AMOUNT } from '../Variables/mainVariables';
 
 function isSorted(arr) {
     for (let i = 1; i < arr.length; i++) {
@@ -120,7 +120,7 @@ function MainApp(props) {
             }
             <BogoSort array={bogoArray} />
             <VStack spacing={8}>
-                <NumberInput onChange={(valueString) => setBogoSize(parseInt(valueString))} size='lg' defaultValue={DEFAULT_AMOUNT} min={7} max={15}>
+                <NumberInput onChange={(valueString) => setBogoSize(parseInt(valueString))} size='lg' defaultValue={DEFAULT_AMOUNT} min={MIN_AMOUNT} max={MAX_AMOUNT}>
                     <NumberInputField />
                     <NumberInputStepper>
                         <NumberIncrementStepper />

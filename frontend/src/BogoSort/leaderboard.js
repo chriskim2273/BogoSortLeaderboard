@@ -26,7 +26,7 @@ import { getUserScores } from '../Requests/GeneralRequests';
 import axios from 'axios';
 import { FaCrown } from "react-icons/fa";
 import { API_URL } from '../Variables/apiVariables';
-import { DEFAULT_AMOUNT } from '../Variables/mainVariables';
+import { MAX_AMOUNT, MIN_AMOUNT } from '../Variables/mainVariables';
 
 function Leaderboard() {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -82,7 +82,7 @@ function Leaderboard() {
                     </DrawerHeader>
 
                     <DrawerBody>
-                        <NumberInput onChange={(valueString) => setAmountOfElements(parseInt(valueString))} size='lg' defaultValue={amountOfElements} min={DEFAULT_AMOUNT} max={15}>
+                        <NumberInput onChange={(valueString) => setAmountOfElements(parseInt(valueString))} size='lg' defaultValue={amountOfElements} min={MIN_AMOUNT} max={MAX_AMOUNT}>
                             <NumberInputField />
                             <NumberInputStepper>
                                 <NumberIncrementStepper />
