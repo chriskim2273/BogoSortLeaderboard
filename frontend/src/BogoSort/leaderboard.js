@@ -33,12 +33,18 @@ function Leaderboard() {
     const [amountOfElements, setAmountOfElements] = useState(7);
     const [userScores, setUserScores] = useState();
     const [loadingScores, setLoadingScores] = useState(false);
+    const [refresh, setRefresh] = useState(false);
     const btnRef = useRef();
+
+    const refreshScores = () => {
+        setRefresh(!refresh);
+    }
 
     useEffect(() => {
         const fetchBestScores = async () => {
             setLoadingScores(true);
             try {
+                console.log('joe');
                 const result = await axios.get(API_URL + 'getBestScores?amount_of_elements=' + String(amountOfElements)).then((response) => {
                     //console.log(response.data.result);
                     setUserScores(response.data.result);
@@ -53,7 +59,7 @@ function Leaderboard() {
             }
         }
         fetchBestScores();
-    }, [amountOfElements]);
+    }, [amountOfElements, refresh]);
 
     const scoresArray = userScores ? Array.from(userScores, (x) => x) : undefined;
     const scoresComponent = loadingScores ? <Skeleton m={5} height='100%' /> : <OrderedList>
@@ -93,7 +99,8 @@ function Leaderboard() {
                         {scoresComponent}
                     </DrawerBody>
 
-                    <DrawerFooter>
+                    <DrawerFooter display="flex" alignItems="center" justifyContent="space-between">
+                        <Button colorScheme='blue' onClick={() => refreshScores()}>Refresh</Button>
                         <Button variant='outline' mr={3} onClick={onClose}>
                             Close
                         </Button>
