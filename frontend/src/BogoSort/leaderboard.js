@@ -44,7 +44,6 @@ function Leaderboard() {
         const fetchBestScores = async () => {
             setLoadingScores(true);
             try {
-                console.log('joe');
                 const result = await axios.get(API_URL + 'getBestScores?amount_of_elements=' + String(amountOfElements)).then((response) => {
                     //console.log(response.data.result);
                     setUserScores(response.data.result);

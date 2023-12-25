@@ -164,13 +164,16 @@ class ConnectToMySQL(threading.local):
                 return {'status': False, 'message': str(e)}, 400
             
             for score in result:
-                _, time, score, amount_of_elements = score
-
-                scores.append({
-                    'time_of_score': time,
-                    'score': score,
-                    'amount_of_elements': amount_of_elements
-                    })
+                _, user_id, time, score, amount_of_elements, _, display_name, email, _ = score
+            formatted_date = time.strftime("%a, %d %b %Y")
+            scores.append({
+                'time_of_score': formatted_date,
+                'score': score,
+                'amount_of_elements': amount_of_elements,
+                'user_id': user_id,
+                'display_name': display_name,
+                'email': email
+                })
             
             return {'status': True, 'result': scores}, 200
     
@@ -199,7 +202,7 @@ class ConnectToMySQL(threading.local):
             return {'status': False, 'message': str(e)}, 400
         
         for score in result:
-            user_id, time, score, amount_of_elements, _, display_name, email, _ = score
+            _, user_id, time, score, amount_of_elements, _, display_name, email, _ = score
             #print(type(time))
             formatted_date = time.strftime("%a, %d %b %Y")
             scores.append({

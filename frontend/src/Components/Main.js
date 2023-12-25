@@ -48,6 +48,7 @@ function isSorted(arr) {
             return false;
         }
     }
+    sortedList = [];
     return true;
 }
 
