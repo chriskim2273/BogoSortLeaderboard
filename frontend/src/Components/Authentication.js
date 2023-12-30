@@ -44,7 +44,7 @@ function AuthenticationComponent(props) {
         {scoresArray ? scoresArray.map((score_element, index) => {
             const { time_of_score, score, amount_of_elements, user_id, display_name, email } = score_element;
             //console.log(typeof time_of_score)
-            return (<Box key={"leaderboard_box_" + String(amount_of_elements) + "_" + String(index)} paddingTop={4}><ListItem key={"leaderboard_" + String(amount_of_elements) + "_" + String(index)}>θ({score}) - {time_of_score} - {display_name}</ListItem><Divider paddingTop={2} paddingBottom={2} /></Box>)
+            return (<Box key={"leaderboard_box_" + String(amount_of_elements) + "_" + String(index)} paddingTop={4}><ListItem key={"leaderboard_" + String(amount_of_elements) + "_" + String(index)}>N: {amount_of_elements} - θ({score}) - {time_of_score} - {display_name}</ListItem><Divider paddingTop={2} paddingBottom={2} /></Box>)
         }) : <Skeleton height='20px' />}
     </OrderedList>;
 

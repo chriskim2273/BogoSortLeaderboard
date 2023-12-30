@@ -132,52 +132,52 @@ class ConnectToMySQL(threading.local):
             return {'status': True, 'message': f'Score from user id {str(user_id)} failed to create.'}, 400
 
     def get_user_scores(self, user_id = None, email = None):
-            search_term = user_id if user_id else email
-            if user_id:
-                query = """
-                    SELECT *
-                    FROM Scores S
-                    INNER JOIN Users U ON S.user_id = U.user_id
-                    WHERE U.user_id = %s
-                    ORDER BY score ASC;
-                """
-            else:
-                query = """
-                    SELECT *
-                    FROM Scores S
-                    INNER JOIN Users U ON S.user_id = U.user_id
-                    WHERE U.email = %s
-                    ORDER BY score ASC;
-                """
-            scores = []
-            try:
-                self.cur.execute(query, [search_term])
-                self.conn.commit()
+        search_term = user_id if user_id else email
+        if user_id:
+            query = """
+                SELECT *
+                FROM Scores S
+                INNER JOIN Users U ON S.user_id = U.user_id
+                WHERE U.user_id = %s
+                ORDER BY score ASC;
+            """
+        else:
+            query = """
+                SELECT *
+                FROM Scores S
+                INNER JOIN Users U ON S.user_id = U.user_id
+                WHERE U.email = %s
+                ORDER BY score ASC;
+            """
+        scores = []
+        try:
+            self.cur.execute(query, [search_term])
+            self.conn.commit()
 
-                result = self.cur.fetchall()
-            except (AttributeError, MySQLdb.OperationalError):
-                self.reconnect()
-                self.cur.execute(query, [search_term])
-                self.conn.commit()
+            result = self.cur.fetchall()
+        except (AttributeError, MySQLdb.OperationalError):
+            self.reconnect()
+            self.cur.execute(query, [search_term])
+            self.conn.commit()
 
-                result = self.cur.fetchall()
-            except Exception as e:
-                return {'status': False, 'message': str(e)}, 400
-            
-            for score in result:
-                _, user_id, time, score, amount_of_elements, _, display_name, email, _ = score
+            result = self.cur.fetchall()
+        except Exception as e:
+            return {'status': False, 'message': str(e)}, 400
+
+        for score in result:
+            _, uid, time, score, amount_of_elements, _, display_name, uemail, _ = score
             formatted_date = time.strftime("%a, %d %b %Y")
             scores.append({
                 'time_of_score': formatted_date,
                 'score': score,
                 'amount_of_elements': amount_of_elements,
-                'user_id': user_id,
+                'user_id': uid,
                 'display_name': display_name,
-                'email': email
+                'email': uemail
                 })
-            
-            return {'status': True, 'result': scores}, 200
-    
+
+        return {'status': True, 'result': scores}, 200
+
     def get_best_scores(self, amount_of_elements):
         query = """
             SELECT *
@@ -201,7 +201,7 @@ class ConnectToMySQL(threading.local):
             result = self.cur.fetchall()
         except Exception as e:
             return {'status': False, 'message': str(e)}, 400
-        
+
         for score in result:
             _, user_id, time, score, amount_of_elements, _, display_name, email, _ = score
             #print(type(time))
