@@ -94,30 +94,18 @@ def uploadScore():
 
 @app.route("/getAllUserScoresById", methods=['GET'])
 def getAllUserScoresById():
-    request_body = None
-    try:
-        request_body = request.json
-    except Exception as _:
-        return {'status': False, "message": "Please provide proper request body."}, 400
-
-    user_id = request_body.get("user_id")
-    if not user_id:
-        return {'status': False, "message": "Please provide proper request body."}, 400
+    uid = request.args.get('uid')
+    if not uid:
+        return {'status': False, "message": "Please provide the user id to find the scores for."}, 400
     
-    response = queryHandler.get_user_scores(user_id=user_id)
+    response = queryHandler.get_user_scores(user_id=uid)
     return response
 
 @app.route("/getAllUserScoresByEmail", methods=['GET'])
 def getAllUserScoresByEmail():
-    request_body = None
-    try:
-        request_body = request.json
-    except Exception as _:
-        return {'status': False, "message": "Please provide proper request body."}, 400
-
-    email = request_body.get("email")
+    email = request.args.get('email')
     if not email:
-        return {'status': False, "message": "Please provide proper request body."}, 400
+        return {'status': False, "message": "Please provide the email to find the scores for."}, 400
     
     response = queryHandler.get_user_scores(email=email)
     return response

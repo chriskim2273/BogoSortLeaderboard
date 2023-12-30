@@ -70,7 +70,6 @@ class ConnectToMySQL(threading.local):
                 user=MYSQL_USER,
                 passwd=MYSQL_PASS,
                 db=MYSQL_DB,
-
             )
         else:
             self.tunnel = sshtunnel.SSHTunnelForwarder(
@@ -137,18 +136,20 @@ class ConnectToMySQL(threading.local):
             if user_id:
                 query = """
                     SELECT *
-                    FROM Scores
-                    WHERE user_id = %s
+                    FROM Scores S
+                    INNER JOIN Users U ON S.user_id = U.user_id
+                    WHERE U.user_id = %s
                     ORDER BY score ASC;
                 """
             else:
                 query = """
                     SELECT *
-                    FROM Scores
-                    WHERE email = %s
+                    FROM Scores S
+                    INNER JOIN Users U ON S.user_id = U.user_id
+                    WHERE U.email = %s
                     ORDER BY score ASC;
                 """
-            scores = {}
+            scores = []
             try:
                 self.cur.execute(query, [search_term])
                 self.conn.commit()
