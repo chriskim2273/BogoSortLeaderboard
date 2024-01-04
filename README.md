@@ -2,7 +2,7 @@
 <p align="center" >A small mini project to prove that BogoSort is the best sorting algorithm.</p>
 <p align="center" >"Theory will only take you so far." - Robert J. Oppenheimer</p>
 
-<h4 align="center" > <span> · </span> <a href="https://github.com/Chriskim2273/BogoSort Leaderboard/blob/master/README.md"> Documentation </a> <span> · </span> <a href="https://github.com/Chriskim2273/BogoSort Leaderboard/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/Chriskim2273/BogoSort Leaderboard/issues"> Request Feature </a> </h4>
+<h4 align="center" > <span> · </span> <a href="https://github.com/Chriskim2273/BogoSortLeaderboard/blob/master/README.md"> Documentation </a> <span> · </span> <a href="https://github.com/Chriskim2273/BogoSortLeaderboard/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/Chriskim2273/BogoSortLeaderboard/issues"> Request Feature </a> </h4>
 
 
 <p align="center"><img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&amp;logo=python&amp;logoColor=white" alt="shields">     <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&amp;logo=html5&amp;logoColor=white" alt="shields">     <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&amp;logo=javascript&amp;logoColor=black" alt="shields">     <img src="https://img.shields.io/website?url=https%3A%2F%2Fmain--magenta-moxie-66d7f2.netlify.app%2F" alt="shields"></p>
