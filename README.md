@@ -71,6 +71,7 @@ Go to backend directory
 cd backend
 ```
 Get a serviceAccountKey.json from Firebase and Paste into backend directory
+
 Source into VirtualEnv
 ```bash
 source venv/bin/activate
@@ -92,6 +93,7 @@ Install all npm packages
 npm install
 ```
 In src directory, paste in firebase.js from Firebase
+
 Run the front-end application
 ```bash
 npm start
