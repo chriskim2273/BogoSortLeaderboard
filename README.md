@@ -31,15 +31,6 @@
 - Log-In and Log-Out
 - View Global Leaderboard
 
-
-### :art: Color Reference
-| Color | Hex |
-| --------------- | ---------------------------------------------------------------- |
-| Primary Color | ![#2d7f9d](https://via.placeholder.com/10/2d7f9d?text=+) #2d7f9d |
-| Secondary Color | ![#393E46](https://via.placeholder.com/10/393E46?text=+) #393E46 |
-| Accent Color | ![#00ADB5](https://via.placeholder.com/10/00ADB5?text=+) #00ADB5 |
-| Text Color | ![#EEEEEE](https://via.placeholder.com/10/EEEEEE?text=+) #EEEEEE |
-
 ### :key: Environment Variables
 To run this project, you will need to add the following environment variables to your .env file
 `MYSQL_HOST`
