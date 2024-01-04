@@ -1,6 +1,6 @@
-<h1>BogoSort Leaderboard</h1>
-<p>A small mini project to prove that BogoSort is the best sorting algorithm./p>
-<p>"Theory will only take you so far." - Robert J. Oppenheimer</p>
+<h1 align="center" id="title">BogoSort Leaderboard</h1>
+<p align="center" >A small mini project to prove that BogoSort is the best sorting algorithm.</p>
+<p align="center" >"Theory will only take you so far." - Robert J. Oppenheimer</p>
 
 <h4> <span> · </span> <a href="https://github.com/Chriskim2273/BogoSort Leaderboard/blob/master/README.md"> Documentation </a> <span> · </span> <a href="https://github.com/Chriskim2273/BogoSort Leaderboard/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/Chriskim2273/BogoSort Leaderboard/issues"> Request Feature </a> </h4>
 
