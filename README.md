@@ -32,7 +32,8 @@
 - View Global Leaderboard
 
 ### :key: Environment Variables
-To run this project, you will need to add the following environment variables to your .env file
+To run this project, you will need to add the following environment variables to your .env file (in backend directory)
+
 `MYSQL_HOST`
 
 `MYSQL_USER`
