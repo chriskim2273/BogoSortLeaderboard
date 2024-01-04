@@ -1,7 +1,3 @@
-<div align='center'>
-
-<img src=https://i.ibb.co/42h7b3H/Screenshot-98.jpg alt="logo" width=800 height= />
-
 <h1>BogoSort Leaderboard</h1>
 <p>A small mini project to prove that BogoSort is the best sorting algorithm./p>
 <p>"Theory will only take you so far." - Robert J. Oppenheimer</p>
