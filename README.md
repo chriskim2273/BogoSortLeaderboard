@@ -140,7 +140,7 @@ Please read the [Code of Conduct](https://github.com/chriskim2273/BogoSortLeader
 
 ## :warning: License
 
-Distributed under the no License. See LICENSE.txt for more information.
+Distributed under the no License.
 
 ## :handshake: Contact
 
@@ -149,8 +149,6 @@ Christopher Kim - - Christopherkim2273@gmail.com
 Project Link: [https://github.com/chriskim2273/BogoSortLeaderboard](https://github.com/chriskim2273/BogoSortLeaderboard)
 
 ## :gem: Acknowledgements
-
-Use this section to mention useful resources and libraries that you have used in your projects.
 
 - [How I connected to PythonAnywhere's MySQL database](https://help.pythonanywhere.com/pages/AccessingMySQLFromOutsidePythonAnywhere/)
 
